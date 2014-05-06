@@ -7,7 +7,7 @@ function solution = TPE1()%the h used here is not global, we want to find it.
 
 	%%% First Part: Estimate h given a sequence of known bytes %%	
 	a = double(imread('../img/lena512.bmp'));
-	E = 512;
+	E = 32;
 	M = size(a,2);
 	initializeGlobals(M);
 	sTrainSent = 255*[rand(1,E) zeros(1,M-E)];
@@ -20,11 +20,12 @@ function solution = TPE1()%the h used here is not global, we want to find it.
 	r = zeros(M,P);
 	s = zeros(M,P);
 	for k=1:rows(a)
-		r(k,:) = transmit(a(k,:),M);	
-		s(k,:) = minimumSquares(H,r);
+		r(k,:) = transmit(a(k,:),M);
+		s(k,:) = minimumSquares(H,r(k,:)');
 	endfor
 	r = uint8(r);
 	s = uint8(s);
+	saveImages(r, s);
 	imshow(r);
 	imshow(s);	
 endfunction
