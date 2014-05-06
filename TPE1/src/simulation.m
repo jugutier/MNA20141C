@@ -6,7 +6,7 @@ function simulation()%the h used here is not global, we want to find it.
 	global L;
 
 	a = double(imread('../img/lena512.bmp'));
-	E = 512;
+	E = 32;
 	M = size(a,2);
 	initializeCannal(M);
 	%%% First Part: Estimate h given a sequence of known bytes %%	
@@ -17,12 +17,12 @@ function simulation()%the h used here is not global, we want to find it.
 	r = zeros(M,P);
 	s = zeros(M,P);
 	for k=1:rows(a)
-		currentr = transmit(a(k,:),M);
-		r(k,:) = currentr;	
-		s(k,:) = minimumSquares(H,currentr');
+		r(k,:) = transmit(a(k,:),M);
+		s(k,:) = minimumSquares(H,r(k,:)');
 	endfor
 	r = uint8(r);
 	s = uint8(s);
+	saveImages(r, s);
 	imshow(r);
 	imshow(s);	
 endfunction
