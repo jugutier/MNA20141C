@@ -1,4 +1,4 @@
-function  initializeGlobals(M)
+function  initializeCannal(M)
 	global h;
 	global L;
 	global H;
