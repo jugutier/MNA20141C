@@ -1,0 +1,266 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{moreverb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{fancybox}
+\usepackage{float}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{url}
+\usepackage{multicol}
+\usepackage[a4paper, hmargin=2cm, vmargin=2.5cm]{geometry}
+
+%Nuevo comando: Inserta una línea recta.
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PORTADA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+
+{ \huge \bfseries Procesamiento de Imágenes}\\[0.4cm]
+
+\large Yemel Angel Jardi Bello (49150) |
+\large Yemel Angel Jardi Bello (49150) |
+\large Yemel Angel Jardi Bello (49150) |
+\large Santiago José Samra (49030)\\[0.3cm] 
+
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Seteo marcos para lo que esté en el entorno verbatim
+\fvset{frame=single}
+
+\begin{abstract}
+\par El objetivo del presente artículo es analizar espectralmente una imagen y utilizar la transformada discreta de Fourier para realizar filtrados espaciales. 
+\end{abstract}
+
+\begin{multicols}{2}
+
+\section{Introducción}
+
+\par 
+El pepe digital de imágenes es el conjunto de técnicas que se aplican a imágenes digitales con el objetivo de mejorar su calidad o facilitar la búsqueda de información en ellas. El proceso de filtrado es el conjunto de técnicas englobadas dentro del preprocesamiento de imágenes cuyo objetivo fundamental es obtener, a partir de una imagen original, otra final cuyo resultado sea más adecuado para una aplicación específica mejorando ciertas características de la misma que posibilite efectuar operaciones del procesado sobre ella. Los principales objetivos que se persiguen con la aplicación de filtros son: suavizar la imagen, eliminar ruido, realzar bordes y detectar bordes.\\
+
+La motivación de este artículo es difundir el uso de la Transformada de Fourier para la implementación de filtros dentro del campo del procesamiento digital de imágenes. En la sección \ref{sec1} se presentará la Transformada de Fourier sobre dos dimensiones, luego en la sección \ref{sec2} se computarán las imágenes correspondientes a la amplitud y fase de una imagen arbitraria. En la sección \ref{sec3} se presentará el concepto de filtro, su utilización y algunos ejemplos. Por último en la sección \ref{sec4} se presentan los resultados y conclusiones.
+
+\section{Desarrollo}
+\subsection{Transformada de Fourier en dos dimensiones}
+\label{sec1}
+
+\par La Transformada de Fourier puede ser generalizada a varias dimensiones. En nuestro caso, una imagen puede interpretarse como una señal de dos dimensiones, por tanto utilizaremos una generaliación bidimensional de la Transformada de Fourier sobre variables discretas (Ecuación \ref{transform}). Análogamente, para el proceso de anti-transformación utilizamos una generalización bidimensional de la anti-transformada sobre variables discretas (Ecuación \ref{antitransform}). Las funciones  \ref{ftbi} y \ref{ftbiInv} del anexo muestran una simple implementación de las ecuaciones anteriores respectivamente. Sin embargo utilizando diferentes propiedades es posible realizar optimizaciones a las mismas para lograr una mayor eficiencia de cómputo. Es por esto que a fines prácticos utilizamos las funciones \verb+fft2+ y \verb+ifft2+ de \textit{Octave} que calculan la Transformada Rápida de Fourier y la Antitransformada Rápida de Fourier respectivamente.
+
+\begin{equation}
+\label{transform}
+X_{l,k} = \sum_{n=0}^{N-1}\sum_{m=0}^{N-1} x_{n,m} e^{-i\frac{2\pi}{N}(nl + mk)}
+\end{equation}
+
+\begin{equation}
+\label{antitransform}
+x_{n,m} = \frac{1}{N^2} \sum_{l=0}^{N-1}\sum_{k=0}^{N-1} X_{l,k} e^{+i\frac{2\pi}{N}(nl + mk)}
+\end{equation}
+
+\subsection{Imágenes en amplitud y fase}
+\label{sec2}
+
+
+\par A modo de ejemplo tomamos una imagen arbitraria, en una escala de 256 grises, llamada \verb+saturno+ (\ref{saturno}). A la misma le aplicamos la Transformada de Fourier en dos dimensiones y remapeando el resultado al intervalo entero $[0,255]$ obtuvimos su representación en fase (\ref{saturnoPhase}), al mismo tiempo aplicando módulo al resultado resultó su representación en amplitud (\ref{saturnoAmplitude}). Para comprobar el proceso podríamos aplicar la Antitransformada de Fourier para obtener nuevamente la imagen original.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/original}
+\caption{Imagen original.}
+\label{saturno}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/saturnoEnFase}
+\caption{Imagen original transformada en fase.}
+\label{saturnoPhase}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/saturnoEnAmplitud}
+\caption{Imagen original transformada en amplitud.}
+\label{saturnoAmplitude}
+\end{figure}
+
+\par 
+
+\subsection{Filtros de imágenes utilizados}
+\label{sec3}
+\par Un filtro es una función que opera contra la representación en fase de una señal, existiendo así diferentes tipos de filtros según su comportamiento. Los filtros pasa bajos son aquellos que eliminan las altas frecuencias y, en el campo de las imágenes, permiten suavizar una imagen, eliminar ruido y detalles pequeños de poco interés ya que sólo afecta a zonas con muchos cambios. Por otro lado, los filtros pasa alto, quienes eliminan las bajas frecuencias, intensifican detalles, bordes y cambios de alta frecuencia y atenúan las zonas de tonos uniformes.
+
+\par Para aplicar un filtro a una imagen es necesario representarlo inicialmente como una matriz, como así también la imagen con la sobre la que se operará. Luego debemos aplicar la Transformada de Fourier a esta imagen, multiplicar elemento a elemento el resultado contra el filtro y, finalmente aplicar la Antitransformada de Fourier al resultado para recuperar la imagen filtrada. Es decir, los filtros se aplican en la frecuencia. Si $x$ es la matriz que contiene a la imagen, $X$ será su transformada y $xfil$ será la imagen con el filtro aplicado. Se denomina $H$ al filtro y $F$ a la Transformada Discreta de Fourier Bidimensional.
+
+\begin{eqnarray*}
+    X &=& F(x)\\
+    xfil &=& F^{-1}(H * X)
+\end{eqnarray*}
+
+\par Para ejemplificar la utilización de los filtros implementamos tres diferentes y su definición se presenta a continaución:
+
+\begin{itemize}
+    \item \begin{equation} H_{k,l} = \left\{ \begin{array}{lr}
+                                0 & \textnormal{ si } 0 \le k \le 400, 190 \le l \le 210\\
+                                0 & \textnormal{ si } 190 \le k \le 210, 0 \le l \le 400\\
+                                1 & \textnormal { en otro caso }
+                               \end{array}
+              \right. 
+          \end{equation}\\
+    \item Filtro Gaussiano \begin{equation} H_{k,l} = e^{ -0.01 (k^2 + l^2)} \end{equation}\\
+    \item El damero \begin{equation} H_{k,l} = \left\{ \begin{array}{lr}
+                                0 & \textnormal{ si } l + k \textnormal{ es par }\\
+                                1 & \textnormal{ si } l + k \textnormal{ es par }
+                               \end{array}
+              \right. 
+          \end{equation}
+\end{itemize}
+
+\section{Resultados y conclusiones}
+\label{sec4}
+
+\par El resultado de aplicar el primer filtro a la imagen \verb+saturno+ se puede observar en la Figura \ref{saturnoFilter1}. En la misma no apreciamos grandes cambios respecto a la imagen original. En cambio, al aplicar el filtro Gaussiano obtuvimos un efecto de \verb+blur+ sobre la imagen original, esto se puede observar en la Figura \ref{saturnoFilter2}. Por último el filtro Damero produce un efecto de simetría sobre la imagen superponíendola con ella misma, este resultado puede verse en la Figura \ref{saturnoFilter3}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/saturnoFiltrado1}
+\caption{La imagen de saturno con el filtro 1 aplicado.}
+\label{saturnoFilter1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/saturnoFiltrado2}
+\caption{La imagen de saturno con el filtro Gaussiano aplicado.}
+\label{saturnoFilter2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/saturnoFiltrado3}
+\caption{La imagen de saturno con el filtro Damero aplicado.}
+\label{saturnoFilter3}
+\end{figure}
+
+
+\par Por lo observado pordemos concluir que realizar el filtrado digial de imágenes mediante la Transformada Discreta de Fourier bidimensional es de baja complejidad en su implementación. Al mismo tiempo proporciona flexibilidad en el diseño de soluciones de filtrado y rapidéz si se utiliza una primitiva eficiente como la que ofrece \textit{Octave}.\\
+
+\end{multicols}
+
+\section{Bibliografía} 
+
+\begin{itemize}
+  \item Fierens, Pablo. \textit{Guía 2}, Métodos Numéricos Avanzados. ITBA, 1er Cuatrimestre 2011
+  \item C. Pinilla, A. Alcalá y F. J. Ariza. \textit{Filtrado de imágenes en el dominio de la frecuencia}, Departamento de Ingeniería Cartográfica, Geodésica y Fotogrametría. Universidad de Jaén. URL: \url{http://www.aet.org.es/revistas/revista8/AET8_5.pdf} - Accedido por última vez el 9 de junio del 2011.
+  \item González, R.C., Wintz, P. \textit{Procesamiento digital de imágenes} URL: \url{http://dmi.uib.es/~catalina/docencia/PDS/tema3.pdf} - Accedido por última vez el 9 de junio del 2011.
+\end{itemize}
+
+\clearpage
+
+\section{Anexo}
+\par Aquí se pueden ver las funciones de \textit{GNU Octave} utilizadas para este análisis.\\
+
+\par El \textit{script} \verb+filter1.m+ implementa el filtro 1.
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{filter1.m} \\
+\verbatiminput{../src/filter1.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+filter2.m+ implementa el filtro Gaussiano.
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{filter2.m} \\
+\verbatiminput{../src/filter2.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+filter3.m+ implementa el filtro Damero.
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{filter3.m} \\
+\verbatiminput{../src/filter3.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+loadData.m+ carga la imagen en memoria. 
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{loadData.m} \\
+\verbatiminput{../src/loadData.m}
+}}
+\end{center}
+\end{ttfamily}
+
+
+\par El \textit{script} \verb+main.m+ tiene por objetivo cargar la imagen \verb+saturno+ en memoria, computar la Transformada Discreta de Fourier de esta imagen, su inversa y aplicarle 3 diferentes filtros. Deja los archivos resultado en el mismo directorio. 
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{main.m} \\
+\verbatiminput{../src/main.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+suma.m+ implementa una suma necesaria para calcular la Transformada Discreta de Fourier de una secuencia bidimensional.
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{suma.m} \\
+\verbatiminput{../src/suma.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+sumaInv.m+ implementa una suma necesaria para calcular la Transformada Discreta de Fourier Inversa de una secuencia bidimensional.
+
+\begin{ttfamily}
+\begin{center}
+\fbox{\parbox{6in}{\textbf{sumaInv.m} \\
+\verbatiminput{../src/sumaInv.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+ftbi.m+ implementa la Transformada Discreta de Fourier de una secuencia bidimensional.
+
+\begin{ttfamily}
+\begin{center}
+\label{ftbi}
+\fbox{\parbox{6in}{\textbf{ftbi.m} \\
+\verbatiminput{../src/ftbi.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\par El \textit{script} \verb+ftbiInv.m+ implementa la Transformada Discreta de Fourier Inversa de una secuencia bidimensional.
+
+\begin{ttfamily}
+\begin{center}
+\label{ftbiInv}
+\fbox{\parbox{6in}{\textbf{ftbiInv.m} \\
+\verbatiminput{../src/ftbiInv.m}
+}}
+\end{center}
+\end{ttfamily}
+
+\end{document}

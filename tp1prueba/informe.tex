@@ -1,0 +1,187 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[pdftex]{graphicx}
+\usepackage{textcomp}
+\usepackage{wrapfig}
+\title{Metodos num\'ericos avanzados\\
+Mercado Financiero : Informe\\
+Trabajo pr\'actico }
+\author{Kenny Kevin 49262\\
+	Lata Andrea 48102 \\
+	Pose Jimena 49015\\
+	Sal-lari Julieta 49629\\}
+\date{29 de septiembre de 2011}
+\makeindex
+\begin{document}
+\maketitle
+\clearpage
+\tableofcontents
+\newpage
+
+\section{Introducci\'on}
+\subsection{Objetivos}
+  El Objetivo del presente trabajo es aproximar mediante cuadrados minimos el indice Standard and Poor's 500 entre los años 1926 y 1993. Para lograr esto utilizamos la herramienta \textit{GNU Octave}
+ \newpage
+ 
+\section{Metodo Cuadrados minimos}
+Para cualquier matriz \textbf{A} \textit{m x n} y cualquier vector \textit{m} \textbf{b} existe una soluci\'on $\vec{x}$ de cuadrados minimos para:
+\begin{equation}
+  \mathbf{A}\vec{x} = \mathbf{b}. 
+\end{equation}
+
+$\vec{x}$ es una soluci\'on si y solo si $\vec{x}$ es una soluci\'on de las ecuaciones normales:
+\begin{equation}
+  \mathbf{A}^{T}\mathbf{A}\vec{x} =  \mathbf{A}^{T}\mathbf{b}.  
+\end{equation}
+
+Si el rango de A es igual al n\'umero de columnas , entonces $\mathbf{A}^{T}\mathbf{A}$ es tambi\'en de rango completo y existe una sola soluci\'on al sistema en la Ec.2. En este caso, existen varios caminos para resolver el problema de cuadrados m\'inimos:
+
+\begin{itemize}
+ \item \textbf{Eliminacion Gaussiana}
+	
+ \item \textbf{Cholesky}
+	    La matriz $B = \mathbf{A}^{T}\mathbf{A}$ que aparece en la Ec. 2 tiene dos propiedades interesantes: es sim\'etrica y definida positiva, entonces se puede asegurar que existe $G$ triangular superior con sus elementos en la diagonal positivos tal que:
+	    \[ B = \mathbf{G}\mathbf{G}^{T} \]
+	    La idea es resolver el sistema en la Ec. 2 en dos partes:
+	    \begin{enumerate}
+	     \item se encuentra, mediante sustituci\'on hacia adelante, $\vec{y}$ tal que $\mathbf{G}\vec{y} = \mathbf{A}^{T}\mathbf{b}.$
+	     \item se busca, mediante sustituci\'on hacia atr\'as, $\vec{x}$ tal que $\mathbf{G}^{T}\vec{x} = \vec{y}$.
+	    \end{enumerate}
+	    Un algoritmo para encontrar G, con $i = 1,...,n$ y $j = i+1,...,n$, es:
+	    \[ \mathbf{G}_{ii}=\sqrt{b_{ii} - \sum_{k=1}^{i-1} \mathbf{G}_{ik}^2} \]
+	    \[ \mathbf{G}_{ji}=( b_{ji} - \sum_{k=1}^{i-1} \mathbf{G}_{jk}\mathbf{G}_{ik})/\mathbf{G}_{ii} \]
+
+ \item \textbf{QR}
+	  Si A es una matriz de \textit{m x n} con columnas linealmente independientes, y si $A = QR$ es una
+	  factorizaci\'on QR, la unica soluci\'on $\vec{x}$ de la Ec. 1 se expresa te\'oricamente con
+	  \[ \vec{x} = R ^{-1} Q^{T} b \]
+	  y puede calcularse resolviendo el sistema
+	  \[ R \vec{x} = Q^{T} b \]
+	   
+	   Existen diferentes m\'etodos para calcular la factorizaci\'on QR, en este caso particular explicaremos como hacerlo mediante las transformaciones de Householder.
+	      
+\end{itemize}
+
+\newpage
+
+\section{Modelo}
+Deseamos ajustar el \'indice Standard and Poor's $\vec{s}$ a la funci\'on:
+\begin{equation}
+  y_{1}(t) = e^{A_{0}+A_{1}t+A_{2}t^{2}}
+\end{equation}
+
+
+donde $y_{1}$ es el valor del \'indice y t es el tiempo. Para ello, se realizar\'a el ajuste por cuadrados m\'inimos del logaritmo natural de \'indice a la funci\'on
+\begin{equation}
+ y_{2}(t) = A_{0}+A_{1}t+A_{2}t^{2}
+\end{equation}
+
+\newpage
+
+\section{Resultados}
+Con los datos de entrada provistos por la catedra en dos columnas, donde la primera es el vector correspondiente al tiempo y la segunda es el vector correspondiente al indice. Se normalizaron los datos como sugiere el enunciado del trabajo practico y se utilizaron los tres m\'etodos explicados anteriormente para ajustarlos.
+
+\subsection{Ajuste con algoritmo propio}
+Llegamos al mismo valor de ajuste a traves de los m\'etodos de Cholesky y de eliminacion Gaussiana; los valores obtenidos se pueden observar en la tabla 1. 
+Estos valores no presentan diferencias con los resultados obtenidos con los algoritmos que provee octave, por lo tanto omitimos dicha informaci\'on.
+
+\begin{table}[h!tbp]
+  \centering
+  \begin{tabular}{|c|c|}
+    \hline
+    Coeficiente & valores \\
+    \hline \hline
+    $A_{0}$ & 3.63807\\ \hline
+    $A_{1}$ & 1.07534\\ \hline
+    $A_{2}$ & 0.15304\\ \hline
+  \end{tabular} 
+  \caption{Valores de los coeficientes obtenidos por cuadrados m\'inimos}
+\end{table}
+
+El error cuadr\'atico del ajuste $|| ln(\vec{s}) - y_{2}(t) || = 45.115$ y $||\vec{s} - y_{1}(t) || = 2703.8$
+ 
+\subsubsection{Problemas con la factorizaci\'on QR}
+La factorizaci\'on QR no soporta la cantidad de datos provistos por la catedra, esto sucede tanto en nuestra implementacion del m\'etodo como la propia de Octave.
+Pudimos comprobar que el codigo soporta hasta aproximadamente 2000 datos. Con esa cantidad de datos podemos asegurar que nuestro c\'odigo funciona correctamente, ya que nos retorna el mismo valor de ajuste que los otros m\'etods.
+
+ \newpage
+\section{Conclusi\'on}
+\subsection{Relacion entre los errores calculados}
+No se ha encontrado relacion entre los dos errores.Lo que se puede concluir es que al utilizar el m\'etodo de cuadrados minimos sobre la aproximacion lineal de la funcion original, no se garantiza la minimizacion del error cuadr\'atico. Por eso observamos que el error de aproximacion de la funcion $y_{2}$ es menor que el error de $y_{1}$ ya que el ajuste se aplico a la funcion linealizada ($y_{2}$).
+
+\newpage
+\section{Bibliografia}
+
+\begin{itemize}
+ \item Fierens, Pablo. \textit{Cuadrados m\'inimos: repaso}, M\'etodos Num\'ericos Avanzados. ITBA, 2do Cuatrimestre 2011
+ \item John H. Mathews. \textit{M\'etodos Num\'ericos con MATLAB}
+ \item G. Strang. \textit{Algebra lineal y sus aplicaciones}
+ \item URL: \textit{www.mty.itesm.mx/etie/deptos/m/ma95-843/lecturas/l843-84.pdf}
+\end{itemize}
+
+\newpage
+\section{Anexo}
+
+\subsection{Funciones de Octave}
+\subsubsection{test}
+La funci\'on test carga los datos otorgados por la catedra, los normaliza y calcula el m\'etodo de cuadrados m\'inimos por los m\'etodos requeridos (excepto con el m\'etodo QR, ya que no soporta esta cantidad de datos). Calcula error cuadr\'atico de los dos ajustes y realiza los gr\'aficos de aproximaci\'on para las dos funciones.
+% 
+% \textbf{test.m} \\
+% \VerbatimInput{test}
+
+\begin{center}
+\textbf{test.m} \\
+\verbatiminput{./test.m}
+\end{center}
+
+\newpage
+\subsubsection{testQR}
+La funci\'on testQR se usa para probar el funcionamiento del m\'etodo QR. Como \'este no soporta la cantidad de datos otorgados, se hace una prueba con solo 2000 datos (archivo datos2.txt). 
+
+\begin{center}
+\textbf{testQR.m} \\
+\verbatiminput{./testQR.m}
+\end{center}
+
+\newpage
+\subsubsection{cuadminGauss}
+\begin{center}
+\textbf{cuadminGauss.m} \\
+\verbatiminput{./cuadminGauss.m}
+\end{center}
+
+\newpage
+\subsubsection{cuadminCholesky}
+\begin{center}
+\textbf{cuadminGauss.m} \\
+\verbatiminput{./cuadminCholesky.m}
+\end{center}
+
+\newpage
+\subsubsection{cuadminQR}
+\begin{center}
+\textbf{cuadminGauss.m} \\
+\verbatiminput{./cuadminQR.m}
+\end{center}
+\subsection{Graficos}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{Ajuste}  
+	\caption{Ajuste por cuadrados m\'inimos del \'indice}
+	\label{figure:ajuste}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400px]{cuadradosMinimos}  
+	\caption{Ajuste por cuadrados m\'inimos de la funci\'on $y_{2}$}
+	\label{figure:cuadradosminimos}
+\end{figure}
+ 
+\end{document}
