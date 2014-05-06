@@ -1,4 +1,5 @@
 function x = minimumSquares(A, y)
+	load cholesky.m;
 	G = cholesky(A' * A);
 	w = zeros(columns(A), 1);
 	x = zeros(columns(A), 1);
