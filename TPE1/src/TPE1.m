@@ -1,27 +1,30 @@
-function solution = TPE1()
+function solution = TPE1()%the h used here is not global, we want to find it.
 	load initializeGlobals.m;
 	load train.m;
 	load transmit.m;
 	initializeGlobals();
-	global h;
 	global L;
-	filename = '../img/lena512.bmp';
-	s = double(imread(filename)(1,L));
+
+	img = imread('../img/lena512.bmp');
+	s = double(img(1,L));
 	M = columns(s);
-	S = toeplitz([zeros(1,M-L) s'],zeros(1,M));
+	S = toeplitz([zeros(1,M-L) s'],zeros(1,M));%%case M=L
 	r = train(S);
-	h = r/S;%desp cholesy y subst hacia atras
-	a = double(imread(filename));
-	L= rows(h);
+	h = r/S;%TODO: find h with chol and backwards substitution.
+	%%%%%%%%%%%%% Second Part %%%%%%%%%%%%%%%%%	
+	a = double(img);
 	M = columns(a);
+	H = toeplitz([zeros(1,M-L) h'],zeros(1,M));
+	P = rows(a);
+	Rfinal = [];%zeros(M,P);
 	Sfinal = [];
-	for i=1:columns(a)
-		r = transmit(a(:,i));
-		H = toeplitz([zeros(1,M-L) h'],zeros(1,M));
+	for k=1:rows(a)
+		r = transmit(a(k,:));
+		Rfinal = [Rfinal r];		
 		s= r/H;
-		Sfinal = [Sfinal s];
+		Sfinal = [Sfinal; s;];
 	endfor
-	Sfinal = uint8(Sfinal);
+	Sfinal = uint8(Sfinal');
 	imshow(Sfinal);
 	
 	
