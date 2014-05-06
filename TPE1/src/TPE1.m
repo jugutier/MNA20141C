@@ -5,27 +5,27 @@ function solution = TPE1()%the h used here is not global, we want to find it.
 	initializeGlobals();
 	global L;
 
-	img = imread('../img/lena512.bmp');
-	s = double(img(1,L));
-	M = columns(s);
-	S = toeplitz([zeros(1,M-L) s'],zeros(1,M));%%case M=L
+	img = double(imread('../img/lena512.bmp'));
+
+	M = (L+2);%size(s,2);%columns(s);
+	s = img(1,1:(M-L))';
+	S = toeplitz([s.' zeros(1,M-L)],zeros(1,M))%%case M=L
 	r = train(S);
-	h = r/S;%TODO: find h with chol and backwards substitution.
+
+	h = r/S%TODO: find h with chol and backwards substitution.
 	%%%%%%%%%%%%% Second Part %%%%%%%%%%%%%%%%%	
-	a = double(img);
-	M = columns(a);
-	H = toeplitz([zeros(1,M-L) h'],zeros(1,M));
-	P = rows(a);
-	Rfinal = [];%zeros(M,P);
-	Sfinal = [];
+	a = img;
+	M = size(a,2);%columns
+	H = toeplitz([h.' zeros(1,M-L)],zeros(1,M));
+	P = size(a,1);%rows
+	r = zeros(M,P);
+	s = zeros(M,P);
 	for k=1:rows(a)
-		r = transmit(a(k,:));
-		Rfinal = [Rfinal r];		
-		s= r/H;
-		Sfinal = [Sfinal; s;];
+		r(k,:) = transmit(a(k,:),M);	
+		s(k,:)= r/H;
 	endfor
-	Sfinal = uint8(Sfinal');
-	imshow(Sfinal);
-	
-	
+	r = uint8(r);
+	s = uint8(s);
+	imshow(r);
+	imshow(s);	
 endfunction
