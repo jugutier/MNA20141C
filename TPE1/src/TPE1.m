@@ -1,7 +1,8 @@
 function solution = TPE1()%the h used here is not global, we want to find it.
 	load initializeGlobals.m;
 	load train.m;
-	load transmit.m;	
+	load transmit.m;
+	load minimumSquares.m;	
 	global L;
 
 	%%% First Part: Estimate h given a sequence of known bytes %%	
@@ -11,7 +12,7 @@ function solution = TPE1()%the h used here is not global, we want to find it.
 	initializeGlobals(M);
 	sTrainSent = 255*[rand(1,E) zeros(1,M-E)];
 	S = toeplitz(sTrainSent, zeros(1,L));
-	r = train(S)';
+	r = train(S);
 	h = minimumSquares(S,r);
 	%% Second Part: transmit image and retrieve it with the h we estimated %%	
 	H = toeplitz([h.' zeros(1,M-L)],zeros(1,M));
