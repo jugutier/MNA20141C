@@ -5,5 +5,7 @@
 function r = transmit(s)
 	global H;
 	global L;
-	r = H*s;%+ ruido
+	global sigma;
+	r = H*s;
+	r = r + sigma*randn(size(r));
 endfunction
