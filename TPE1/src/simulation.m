@@ -1,13 +1,11 @@
-function simulation()%the h used here is not global, we want to find it.
-	load initializeCannal.m;
-	load estimateh.m
-	load transmit.m;
-	load minimumSquares.m;	
+%Simulates the whole canal transmition problem.
+%Note that the h used here is not global, we want to find it.
+function simulation()
 	global L;
 
 	a = double(imread('../img/lena512.bmp'));
 	E = 512;
-	M = size(a,2);
+	M = size(a,2);%columns
 	initializeCannal(M);
 	%% First Part: Estimate h given a sequence of known bytes %%	
 	h = estimateh(E,M);
@@ -18,13 +16,12 @@ function simulation()%the h used here is not global, we want to find it.
 	r = zeros(M,P);
 	s = zeros(M,P);
 
-	[Q R] = qr(H);
+	G = cholesky(H' * H);
+
 	for k=1:rows(a)
 		startTime = time();
 		r(k,:) = transmit(a(k,:)')';
-		%s(k,:) = lsqnonneg(H,r(k,:)');
-		%s(k,:)%for debugging
-		s(k,:) = minimumSquares(H,r(k,:)')';
+		s(k,:) = backSustitution(H,r(k,:)',G)';
 		elapsedTime = time() - startTime;
 		printf('k=%d time= %.5f\n',k,elapsedTime);
 	endfor

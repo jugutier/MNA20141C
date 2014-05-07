@@ -1,11 +1,9 @@
 function h = estimateh(E,M)
-	load train.m;
-	load minimumSquares.m;
 	global L;
-	S = toeplitz(255*[rand(1,E) zeros(1,M-E)], zeros(1,L));
+	MAX_IMGVALUE = 255;
+	trainSequence = MAX_IMGVALUE*rand(1,E) ;
+	S = toeplitz([trainSequence  zeros(1,M-E)], zeros(1,L));
 	r = train(S);
-	h = minimumSquares(S,r);
-	%sTrainReceived = 255*[rand(1,E) zeros(1,M-E)]
-	%[Q R] = qr(S);
-	%h_estimada = inv(R)*(Q'*sTrainReceived);
+	G = cholesky(S' * S);
+	h = backSustitution(S,r,G);
 endfunction
