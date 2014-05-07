@@ -1,7 +1,7 @@
 %Simulates the whole canal transmition problem.
 %Note that the h used here is not global, we want to find it.
 function simulation()
-	L=1;
+	global L;
 
 	format long;
 
@@ -14,7 +14,7 @@ function simulation()
 	initializeCannal(M);
 	%% First Part: Estimate h given a sequence of known bytes %%	
 	h = estimateh(E,M);
-	e = calculatehError(h)
+	e = calculatehError(h);
 	%% Second Part: transmit image and retrieve it with the h we estimated %%
 	H = toeplitz([h.' zeros(1,M-L)],zeros(1,M));
 	P = size(a,1);%rows
@@ -23,8 +23,11 @@ function simulation()
 	G = cholesky(H' * H);
 
 	for k=1:rows(a)
+		k
+		fflush(stdout);
 		for l = 1:chunk_amount
 			ii = (l-1)*M+1:l*M;
+			
 			r(k,ii) = transmit(a(k,ii)');
 			s(k,ii) = backSustitution(H,r(k,ii)',G)';
 		endfor
