@@ -1,3 +1,5 @@
+%%%
+%Decomposes matrix A into matrix G with Cholesky's decomposition.
 function G = cholesky(A)
 	G = zeros(size(A));
 
