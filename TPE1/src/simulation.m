@@ -14,10 +14,10 @@ function simulation()
 	initializeCannal(M);
 	%% First Part: Estimate h given a sequence of known bytes %%	
 	h = estimateh(E,M);
-	e = calculatehError(h);
+	e = calculatehError(h)
 	%% Second Part: transmit image and retrieve it with the h we estimated %%
 	H = toeplitz([h.' zeros(1,M-L)],zeros(1,M));
-	P = size(a,1);%rows
+	P = size(a,1);
 	r = zeros(M,P);
 	s = zeros(M,P);
 	G = cholesky(H' * H);
@@ -26,8 +26,7 @@ function simulation()
 		k
 		fflush(stdout);
 		for l = 1:chunk_amount
-			ii = (l-1)*M+1:l*M;
-			
+			ii = (l-1)*M+1:l*M;			
 			r(k,ii) = transmit(a(k,ii)');
 			s(k,ii) = backSustitution(H,r(k,ii)',G)';
 		endfor

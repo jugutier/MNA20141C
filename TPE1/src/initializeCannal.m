@@ -1,3 +1,5 @@
+%Simulates the initializacion of the communications cannal
+%params: M columns of the image to be sent.
 function  initializeCannal(M)
 	global h;
 	global L;
