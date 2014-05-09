@@ -16,7 +16,8 @@ function simulation()
 	h = estimateh(E,M);
 	e = calculatehError(h)
 	%% Second Part: transmit image and retrieve it with the h we estimated %%
-	H = toeplitz([h.' zeros(1,M-L)],zeros(1,M));
+	global Lguess;
+	H = toeplitz([h.' zeros(1,M-Lguess)],zeros(1,M));
 	P = size(a,1);
 	r = zeros(M,P);
 	s = zeros(M,P);
