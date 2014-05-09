@@ -5,7 +5,7 @@ function  initializeCannal(M)
 	global L;
 	global H;
 	global sigma;
-	sigma = 0.1;
+	sigma = 0.01;
 	L = 5;
 	ganancia = 1/10;
 	h = ganancia * (1+randn(L,1));%%this h is unknown, we want to estimate it.	
