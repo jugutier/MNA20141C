@@ -1,8 +1,7 @@
 %Simulates the whole canal transmition problem.
 %Note that the h used here is not global, we want to find it.
 function simulation()
-	global L;
-
+	global Lguess;
 	format long;
 
 	original = imread('../img/lena512.bmp');
@@ -16,7 +15,6 @@ function simulation()
 	h = estimateh(E,M);
 	e = calculatehError(h)
 	%% Second Part: transmit image and retrieve it with the h we estimated %%
-	global Lguess;
 	H = toeplitz([h.' zeros(1,M-Lguess)],zeros(1,M));
 	P = size(a,1);
 	r = zeros(M,P);
