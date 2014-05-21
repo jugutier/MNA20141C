@@ -1,4 +1,7 @@
-function H = filter3()
+%
+% H will have the shape of a checkerboard, black and white 'squares'.
+%
+function H = checkerboadFilter()
     H = zeros(400, 400);
     for i=1:400
         for j=1:400

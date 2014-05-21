@@ -1,4 +1,4 @@
-function H = filter2()
+function H = gaussianFilter()
     H = zeros(400, 400);
     for i=1:400
         for j=1:400

@@ -1,4 +1,4 @@
-function H = filter1()
+function H = onesFilter()
     H = ones(400, 400);
     for i=1:400
         for j=190:210
