@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 *.synctex.gz
+octave-core
+*.sublime-project
+*.sublime-workspace
