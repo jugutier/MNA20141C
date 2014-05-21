@@ -1,16 +1,16 @@
 
 function simulation()
-	%[x y] = loadData('../data/saturn');
+	addpath('./filters');
 	x = loadData('../data/saturn');
 	colormap(gray(255));
 
-	mkdir('../img/results');
-
 	%Display original image
 	image(x');
-	print("-dpng", "../img/results/saturn.png");
+	print("-dpng", "../img/saturn.png");
 
 	%Display image transformed into phase
+	printf('Transforming image into phase... ');
+	fflush(stdout);
 	X = fftn(x);
 	phase = angle(X);
 	mx = max(max(phase));
@@ -21,34 +21,55 @@ function simulation()
 
 	nphase = floor(m*phase + b);
 	image(nphase');
-	print("-dpng", "../img/results/saturn_phase.png");
+	print("-dpng", "../img/saturn_phase.png");
+	printf('done.\n');
+	fflush(stdout);
 
 	%Display image transformed into amplitude
+	printf('Transforming image into amplitude... ');
+	fflush(stdout);
 	image(abs(X)');
-	print("-dpng", "../img/results/saturn_amplitude.png");
+	print("-dpng", "../img/saturn_amplitude.png");
+	printf('done.\n');
+	fflush(stdout);
 
 
 	%Display recovered original image
+	printf('Recovering original image... ');
+	fflush(stdout);
 	xprima = ifftn(X);
 	image(abs(xprima)');
-	print("-dpng", "../img/results/saturn_recovered.png");
-
+	print("-dpng", "../img/saturn_recovered.png");
+	printf('done.\n');
+	fflush(stdout);
 
 	%Apply first filter
-	xf1_function = filter1().*X;
+	printf('Applying first filter... ');
+	fflush(stdout);
+	xf1_function = onesFilter().*X;
 	xf1_result = abs(ifftn(xf1_function))';
 	image(xf1_result);
-	print("-dpng", "../img/results/saturn_filter1.png");
+	print("-dpng", "../img/saturn_filter1.png");
+	printf('done.\n');
+	fflush(stdout);
 
 	%Apply second filter (Gaussian)
-	xf2_function = filter2().*X;
+	printf('Applying gaussian filter... ');
+	fflush(stdout);
+	xf2_function = gaussianFilter().*X;
 	xf2_result = abs(ifftn(xf2_function))';
 	image(xf2_result);
-	print("-dpng", "../img/results/saturn_filter2.png");
+	print("-dpng", "../img/saturn_filter2.png");
+	printf('done.\n');
+	fflush(stdout);
 
 	%Apply third filter (Checkered)
-	xf3_function = filter3().*X;
+	printf('Applying checkeredboard filter... ');
+	fflush(stdout);
+	xf3_function = checkerboardFilter().*X;
 	xf3_result = abs(ifftn(xf3_function))';
 	image(xf3_result);
-	print("-dpng", "../img/results/saturn_filter3.png");
+	print("-dpng", "../img/saturn_filter3.png");
+	printf('done.\n');
+	fflush(stdout);
 end
