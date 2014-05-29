@@ -63,7 +63,7 @@ function simulation()
 	printf('done.\n');
 	fflush(stdout);
 
-	%Apply third filter (Checkered)
+	%Apply third filter (Checkerboard)
 	printf('Applying checkeredboard filter... ');
 	fflush(stdout);
 	xf3_function = checkerboardFilter().*X;
