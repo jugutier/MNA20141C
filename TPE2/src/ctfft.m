@@ -1,7 +1,11 @@
 %cooley tukey fast fourier transformed
 %N must be a power of 2
 %
-function X =  ctfft(x,N)
+function X =  ctfft(x)
+    N= length(x);
+    if(log2(N)-floor(log2(N))!=0)
+        disp('x must be a power of 2');
+    endif
     if(N == 1)      
         X(1)=x(1);
     else
