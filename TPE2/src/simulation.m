@@ -5,13 +5,13 @@ function simulation()
 	colormap(gray(255));
 
 	%Display original image
-	image(x');
-	print("-dpng", "../img/saturn.png");
+	%image(x');
+	%print("-dpng", "../img/saturn.png");
 
 	%Display image transformed into phase
 	printf('Transforming image into phase... ');
 	fflush(stdout);
-	X = fftn(x);
+	X = ctfft2(x);
 	phase = angle(X);
 	mx = max(max(phase));
 	mn = min(min(phase));
@@ -37,7 +37,7 @@ function simulation()
 	%Display recovered original image
 	printf('Recovering original image... ');
 	fflush(stdout);
-	xprima = ifftn(X);
+	xprima = ictfft2(X);
 	image(abs(xprima)');
 	print("-dpng", "../img/saturn_recovered.png");
 	printf('done.\n');
@@ -47,7 +47,7 @@ function simulation()
 	printf('Applying first filter... ');
 	fflush(stdout);
 	xf1_function = onesFilter().*X;
-	xf1_result = abs(ifftn(xf1_function))';
+	xf1_result = abs(ictfft2(xf1_function))';
 	image(xf1_result);
 	print("-dpng", "../img/saturn_filter1.png");
 	printf('done.\n');
@@ -57,7 +57,7 @@ function simulation()
 	printf('Applying gaussian filter... ');
 	fflush(stdout);
 	xf2_function = gaussianFilter().*X;
-	xf2_result = abs(ifftn(xf2_function))';
+	xf2_result = abs(ictfft2(xf2_function))';
 	image(xf2_result);
 	print("-dpng", "../img/saturn_filter2.png");
 	printf('done.\n');
@@ -67,7 +67,7 @@ function simulation()
 	printf('Applying checkeredboard filter... ');
 	fflush(stdout);
 	xf3_function = checkerboardFilter().*X;
-	xf3_result = abs(ifftn(xf3_function))';
+	xf3_result = abs(ictfft2(xf3_function))';
 	image(xf3_result);
 	print("-dpng", "../img/saturn_filter3.png");
 	printf('done.\n');
