@@ -1,0 +1,42 @@
+   #                             Function Attr     Time (s)        Calls
+------------------------------------------------------------------------
+  44                       core>ctfftCore    R      365.631      4092000
+   1                                         R       79.540          760
+  46                             binary *            13.930     16512018
+  15                             binary /            12.847     20440035
+  49                                  exp             9.665      4248000
+  47                                   pi             7.766      4088000
+  48                                    I             7.244      4088000
+ 155                              drawnow             6.489           19
+  45                             binary +             4.501     10540264
+  50                            binary .*             3.581      4088003
+  13                             binary -             3.547      6132117
+   7                            binary ==             3.028      4092872
+ 167                       gaussianFilter             2.570            1
+ 168                   checkerboardFilter             2.505            1
+  32                                 load             0.337            1
+  38                                 core             0.275           10
+  42                             binary ^             0.169       320010
+  30                                  set             0.167          105
+ 169                                  mod             0.166       160000
+ 165                           onesFilter             0.127            1
+   2                           simulation             0.091            1
+ 125                                print             0.089            6
+  55                             prefix -             0.085       160016
+  65                          __go_axes__             0.074            1
+  74                     __go_axes_init__             0.071            6
+  95                              findobj             0.057           30
+  58                              cellfun             0.044          454
+  22                                  get             0.040          551
+  87              axis>__get_tight_lims__             0.040           12
+  88                               strcat             0.030           56
+ 158                      __fltk_redraw__             0.029            6
+  76                        image>__img__             0.029            6
+  80                         __go_image__             0.027            6
+ 126                 __print_parse_opts__             0.026            6
+ 156                       __fltk_print__             0.022            6
+ 171                    __profiler_data__             0.021            1
+ 127 __print_parse_opts__>__find_binary__             0.021           24
+  57                                image             0.019            6
+  60                              newplot             0.019            6
+ 135                         file_in_path             0.018           27
