@@ -1,17 +1,45 @@
-
+%Compute the whole simulation aving and showing images
+%also display error on recovery.
 function simulation()
 	addpath('./filters');
 	x = loadData('../data/saturn');
 	colormap(gray(255));
 
 	%Display original image
-	%image(x');
-	%print("-dpng", "../img/saturn.png");
+	%doi(x);
 
 	%Display image transformed into phase
+	tic
+	X = ctfft2(x);
+	toc
+	%ditip(X);	
+
+	%Display image transformed into amplitude
+	%ditia(X);
+
+	%Display recovered original image
+	originalImage = x;
+	recoveredImage = droi(X);
+	printf('Error while recovering image: %.22f\n',meanError(originalImage,recoveredImage));
+
+	%Apply first filter
+	%aff(X);
+
+	%Apply second filter (Gaussian)
+	%asf(X);
+
+	%Apply third filter (Checkerboard)
+	%atf(X);
+end
+
+function doi(x)
+	image(x');
+	print("-dpng", "../img/saturn.png");
+endfunction
+
+function ditip(X)
 	printf('Transforming image into phase... ');
 	fflush(stdout);
-	X = ctfft2(x);
 	phase = angle(X);
 	mx = max(max(phase));
 	mn = min(min(phase));
@@ -24,26 +52,29 @@ function simulation()
 	print("-dpng", "../img/saturn_phase.png");
 	printf('done.\n');
 	fflush(stdout);
+endfunction
 
-	%Display image transformed into amplitude
+function ditia(X)
 	printf('Transforming image into amplitude... ');
 	fflush(stdout);
 	image(abs(X)');
 	print("-dpng", "../img/saturn_amplitude.png");
 	printf('done.\n');
 	fflush(stdout);
+endfunction
 
-
-	%Display recovered original image
+function recoveredImage = droi(X)
 	printf('Recovering original image... ');
 	fflush(stdout);
 	xprima = ictfft2(X);
-	image(abs(xprima)');
+	recoveredImage = abs(xprima)';
+	image(recoveredImage);
 	print("-dpng", "../img/saturn_recovered.png");
 	printf('done.\n');
 	fflush(stdout);
+endfunction
 
-	%Apply first filter
+function aff(X)
 	printf('Applying first filter... ');
 	fflush(stdout);
 	xf1_function = onesFilter().*X;
@@ -52,8 +83,9 @@ function simulation()
 	print("-dpng", "../img/saturn_filter1.png");
 	printf('done.\n');
 	fflush(stdout);
+endfunction
 
-	%Apply second filter (Gaussian)
+function asf(X)
 	printf('Applying gaussian filter... ');
 	fflush(stdout);
 	xf2_function = gaussianFilter().*X;
@@ -62,8 +94,9 @@ function simulation()
 	print("-dpng", "../img/saturn_filter2.png");
 	printf('done.\n');
 	fflush(stdout);
+endfunction
 
-	%Apply third filter (Checkerboard)
+function atf(X)
 	printf('Applying checkeredboard filter... ');
 	fflush(stdout);
 	xf3_function = checkerboardFilter().*X;
@@ -72,4 +105,4 @@ function simulation()
 	print("-dpng", "../img/saturn_filter3.png");
 	printf('done.\n');
 	fflush(stdout);
-end
+endfunction

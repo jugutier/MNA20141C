@@ -7,27 +7,26 @@
 %
 function X = core(x , inv_)
     [n m] = size(x);
-    N = 2^ceil(log2(n));
-    x = [x;zeros(N-n,m)];
-    X = zeros(N,m);
+    X = zeros(n,m);
     for k = 1:m
-        X(:,k)= ctfftCore(x(:,k),N,inv_);
+        X(:,k)= ctfftCore(x(:,k),n,inv_);
     endfor
     if(inv_ == 1)
-        X = X/N;
+        X = X/n;
     endif
-    X = X(1:n,1:m);
 endfunction
 
 function X =  ctfftCore(x,N,inv_)
-    if(N == 1)      
-        X(1)=x(1);
+    if(N == 25)      
+        %X(1)=x(1);
+        b = 1:25;
+        X(b) = x(b).*exp(inv_*2*pi*i* (b-1)/N).';
     else
         X(1:N/2) = ctfftCore(x(1:2:N),N/2,inv_);
         X(N/2+1:N) = ctfftCore(x(2:2:N),N/2,inv_);
         k = 1: N/2;
         t = X(k);
         X(k) = t + exp(inv_*2*pi*i* (k-1)/N).*X(k+N/2);
-        X(k+N/2) = t - exp(inv_*+2*pi*i* (k-1)/N).*X(k+N/2);
+        X(k+N/2) = t - exp(inv_*2*pi*i* (k-1)/N).*X(k+N/2);
     endif
 endfunction 
