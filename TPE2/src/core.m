@@ -19,8 +19,10 @@ endfunction
 function X =  ctfftCore(x,N,inv_)
     if(N == 25)      
         %X(1)=x(1);
-        b = 1:25;
-        X(b) = x(b).*exp(inv_*2*pi*i* (b-1)/N).';
+        col = exp(inv_*2*pi*i* (0:N-1)/N).';
+        V = vander(col,N);
+        X = x.'*V;
+        X = fliplr(X);
     else
         X(1:N/2) = ctfftCore(x(1:2:N),N/2,inv_);
         X(N/2+1:N) = ctfftCore(x(2:2:N),N/2,inv_);

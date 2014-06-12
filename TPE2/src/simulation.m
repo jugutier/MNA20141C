@@ -1,4 +1,4 @@
-%Compute the whole simulation aving and showing images
+%Compute the whole simulation saving and showing images
 %also display error on recovery.
 function simulation()
 	addpath('./filters');
@@ -6,30 +6,30 @@ function simulation()
 	colormap(gray(255));
 
 	%Display original image
-	%doi(x);
+	doi(x);
 
 	%Display image transformed into phase
 	tic
 	X = ctfft2(x);
 	toc
-	%ditip(X);	
+	ditip(X);	
 
 	%Display image transformed into amplitude
-	%ditia(X);
+	ditia(X);
 
 	%Display recovered original image
-	originalImage = x;
+	originalImage = x';
 	recoveredImage = droi(X);
 	printf('Error while recovering image: %.22f\n',meanError(originalImage,recoveredImage));
 
 	%Apply first filter
-	%aff(X);
+	aff(X);
 
 	%Apply second filter (Gaussian)
-	%asf(X);
+	asf(X);
 
 	%Apply third filter (Checkerboard)
-	%atf(X);
+	atf(X);
 end
 
 function doi(x)
@@ -67,7 +67,7 @@ function recoveredImage = droi(X)
 	printf('Recovering original image... ');
 	fflush(stdout);
 	xprima = ictfft2(X);
-	recoveredImage = abs(xprima)';
+	recoveredImage = round((real(xprima)).');
 	image(recoveredImage);
 	print("-dpng", "../img/saturn_recovered.png");
 	printf('done.\n');
